@@ -19,9 +19,8 @@ class ComposeSessionHandler: NSObject, MEComposeSessionHandler {
     }
     
     // MARK: - Annotating Address Tokens
-
-    func annotateAddressesForSession(_ session: MEComposeSession) async -> [String: MEAddressAnnotation] {
-        var annotations: [String: MEAddressAnnotation] = [:]
+    func annotateAddressesForSession(_ session: MEComposeSession) async -> [MEEmailAddress: MEAddressAnnotation] {
+        var annotations: [MEEmailAddress: MEAddressAnnotation] = [:]
         
         // Iterate through all the recipients in the message.
         for address in session.mailMessage.allRecipientAddresses {
@@ -72,7 +71,7 @@ class ComposeSessionHandler: NSObject, MEComposeSessionHandler {
         // Before Mail sends a message, your extension can validate the
         // contents of the compose session. If the message isn't ready to be
         // sent, throw an error.
-        if session.mailMessage.allRecipientAddresses.contains(where: { $0.hasSuffix(SpecialProjectHandler.bannedDomain) }) {
+        if session.mailMessage.allRecipientAddresses.contains(where: { $0.rawString.hasSuffix(SpecialProjectHandler.bannedDomain) }) {
             throw ComposeSessionError.invalidRecipientDomain
         }
     }

@@ -12,7 +12,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     static let shared = MessageSecurityHandler()
     
     enum MessageSecurityError: Error {
-        case unverifiedEmails(emailAdresses: [String])
+        case unverifiedEmails(emailAdresses: [MEEmailAddress])
         case noEncodableData
         var errorReason: String {
             switch self {
@@ -25,8 +25,8 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     }
 
     // MARK: - Encoding Messages
-
-    func getEncodingStatus(for message: MEMessage, completionHandler: @escaping (MEOutgoingMessageEncodingStatus) -> Void) {
+    
+    func encodingStatus(message: MEMessage) async -> MEOutgoingMessageEncodingStatus {
         // Indicate whether you support signing, encrypting, or both. If the
         // message contains recipients that you can't sign or encrypt for,
         // specify an error and include the addresses in the
@@ -36,15 +36,15 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
             return !SpecialProjectHandler.verifiedEmails.contains(address)
         })
         if !invalidRecipients.isEmpty {
-            completionHandler(MEOutgoingMessageEncodingStatus(
+            return MEOutgoingMessageEncodingStatus(
                 canSign: false,
                 canEncrypt: false,
                 securityError: MessageSecurityError.unverifiedEmails(emailAdresses: invalidRecipients),
-                addressesFailingEncryption: invalidRecipients))
+                addressesFailingEncryption: invalidRecipients)
         } else {
             let encoder = MockEncoder.sharedInstance
             let encodingStatus = encoder.securityStatus(for: message)
-            completionHandler(encodingStatus)
+            return encodingStatus
         }
     }
     

@@ -6,6 +6,7 @@ The handler for special project selection.
 */
 
 import Foundation
+import MailKit
 
 class SpecialProjectHandler {
     
@@ -18,6 +19,6 @@ class SpecialProjectHandler {
     
     static let specialProjectsHeader = "x-special-projects"
     static let bannedDomain = "example.com"
-    static let verifiedEmails = ["seth@example.com"]
+    static let verifiedEmails: [MEEmailAddress] = [MEEmailAddress(rawString: "seth@example.com")]
     var selectedSpecialProject: SpecialProject? = nil
 }

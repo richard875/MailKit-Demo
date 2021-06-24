@@ -10,12 +10,12 @@ class MessageActionHandler: NSObject, MEMessageActionHandler {
 
     static let shared = MessageActionHandler()
     
-    func decideActionForMessage(for message: MEMessage) async -> MEMessageActionDecision? {
+    func decideAction(for message: MEMessage) async -> MEMessageActionDecision? {
         
         // Check if the subject of the message contains a mention of one of the X-Special-Projects.
         // If it does, specify an action to set the color to yellow.
         if SpecialProjectHandler.SpecialProject.allCases.first(where: { message.subject.contains($0.rawValue) }) != nil {
-            return MEMessageActionDecision.action(.setColorActionWith(.yellow))
+            return MEMessageActionDecision.action(.setColor(.yellow))
         }
         
         // If there is no message data, return `.invokeAgainWithBody`.
@@ -27,9 +27,9 @@ class MessageActionHandler: NSObject, MEMessageActionHandler {
         // If there is, specify an action to set the color based on the project.
         if let projects = message.headers?[SpecialProjectHandler.specialProjectsHeader] {
             if projects.contains(SpecialProjectHandler.SpecialProject.marsRemoteOffice.rawValue) {
-                return MEMessageActionDecision.action(.setColorActionWith(.red))
+                return MEMessageActionDecision.action(.setColor(.red))
             } else if projects.contains(SpecialProjectHandler.SpecialProject.apSpaceShuttle.rawValue) {
-                return MEMessageActionDecision.action(.setColorActionWith(.green))
+                return MEMessageActionDecision.action(.setColor(.green))
             }
         }
         
@@ -38,7 +38,7 @@ class MessageActionHandler: NSObject, MEMessageActionHandler {
         if let rawData = message.rawData,
            let text = String(data: rawData, encoding: .utf8),
            SpecialProjectHandler.SpecialProject.allCases.first(where: { text.contains($0.rawValue) }) != nil {
-            return MEMessageActionDecision.action(.setColorActionWith(.purple))
+            return MEMessageActionDecision.action(.setColor(.purple))
         }
         
         // Always call the completion handler, passing the action
