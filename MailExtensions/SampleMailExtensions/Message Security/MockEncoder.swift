@@ -25,7 +25,7 @@ class MockEncoder {
             addressesFailingEncryption: [])
     }
     
-    func encodedMessage(for message: MEMessage, shouldSign: Bool, shouldEncrypt: Bool) -> MEMessageEncodingResult {
+    func encodedMessage(for message: MEMessage, context: MEComposeContext) -> MEMessageEncodingResult {
         guard let data = message.rawData, shouldEncode(message) == true else {
             return MEMessageEncodingResult(
                 encodedMessage: nil,
@@ -35,8 +35,8 @@ class MockEncoder {
         return MEMessageEncodingResult(
             encodedMessage: MEEncodedOutgoingMessage(
                 rawData: data,
-                isSigned: true,
-                isEncrypted: true),
+                isSigned: context.isSigned,
+                isEncrypted: context.isEncrypted),
             signingError: nil,
             encryptionError: nil)
         }
@@ -56,6 +56,8 @@ class ExampleDecoder {
                 signers: [],
                 isEncrypted: true,
                 signingError: nil,
-                encryptionError: nil))
+                encryptionError: nil),
+            context: nil,
+            banner: nil)
     }
 }

@@ -26,7 +26,7 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
 
     // MARK: - Encoding Messages
     
-    func encodingStatus(message: MEMessage) async -> MEOutgoingMessageEncodingStatus {
+    func encodingStatus(for message: MEMessage, composeContext: MEComposeContext) async -> MEOutgoingMessageEncodingStatus {
         // Indicate whether you support signing, encrypting, or both. If the
         // message contains recipients that you can't sign or encrypt for,
         // specify an error and include the addresses in the
@@ -48,15 +48,12 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
         }
     }
     
-    func encode(_ message: MEMessage, shouldSign: Bool, shouldEncrypt: Bool) async -> MEMessageEncodingResult {
+    func encode(_ message: MEMessage, composeContext: MEComposeContext) async -> MEMessageEncodingResult {
         // The result of the encoding operation. This object contains
         // the encoded message or an error to indicate what failed.
         // The encoder returns an MEMessageEncodingResult populated with either
         // encoded message data or an error.
-        return MockEncoder.sharedInstance.encodedMessage(
-            for: message,
-               shouldSign: shouldSign,
-               shouldEncrypt: shouldEncrypt)
+        return MockEncoder.sharedInstance.encodedMessage(for: message, context: composeContext)
     }
           
     // MARK: - Decoding Messages
@@ -77,9 +74,20 @@ class MessageSecurityHandler: NSObject, MEMessageSecurityHandler {
     // MARK: - Displaying Security Information
     
     func extensionViewController(signers messageSigners: [MEMessageSigner]) -> MEExtensionViewController? {
-        
         let controller = ExampleSigningViewController.sharedInstance
         controller.signers = messageSigners
         return controller
     }
+    
+    func extensionViewController(messageContext context: Data) -> MEExtensionViewController? {
+        let controller = ExampleSigningViewController.sharedInstance
+        controller.msgContext = context
+        return controller
+    }
+
+    func primaryActionClicked(forMessageContext context: Data) async -> MEExtensionViewController? {
+        let controller = ExampleSigningViewController.sharedInstance
+        return controller
+    }
+    
 }

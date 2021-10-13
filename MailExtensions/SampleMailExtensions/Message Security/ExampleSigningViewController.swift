@@ -12,6 +12,7 @@ class ExampleSigningViewController: MEExtensionViewController {
     static let sharedInstance = ExampleSigningViewController()
     
     var signers: [MEMessageSigner]?
+    var msgContext: Data?
     
     override func viewDidLoad() {
         super.viewDidLoad()
